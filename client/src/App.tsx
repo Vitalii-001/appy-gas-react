@@ -1,14 +1,16 @@
-import { Fragment } from 'react';
+import React from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import './App.scss';
 
 import Footer from './components/layout/Footer';
 
-import Dashboard from './components/pages/Dashboard';
-import FlowsMap from './components/pages/Flows-map';
-import RouteCalculator from './components/pages/Route-calculator';
-import Availability from './components/pages/Availability';
-import RootLayout from './components/pages/Root';
+import Dashboard from './pages/Dashboard/Dashboard';
+import FlowsMap from './pages/Flows-map';
+import RouteCalculator from './pages/Route-calculator';
+import Availability from './pages/Availability';
+import RootLayout from './pages/Root';
+import Download from './pages/Download';
+import SignIn from './components/Auth/SignInForm';
 
 const router = createBrowserRouter([
   {
@@ -18,6 +20,10 @@ const router = createBrowserRouter([
       {
         path: "/",
         element: <Dashboard />,
+      },
+      {
+        path: "sign-in",
+        element: <SignIn />,
       },
       {
         path: "flows-map",
@@ -30,6 +36,10 @@ const router = createBrowserRouter([
       {
         path: "availability",
         element: <Availability />,
+      },
+      {
+        path: "download",
+        element: <Download />,
       }
     ]
   },
@@ -37,10 +47,10 @@ const router = createBrowserRouter([
 
 function App() {
   return (
-    <Fragment>
+    <>
       <RouterProvider router={router} />
       <Footer />
-    </Fragment>
+    </>
   );
 }
 

@@ -1,17 +1,16 @@
-import { Fragment } from 'react';
 import { Outlet } from 'react-router-dom';
 
-import MainNavigation from '../MainNavagation';
-import Header from '../layout/Header';
+import MainNavigation from '../components/MainNavigation/MainNavagation';
+import Header from '../components/layout/Header/Header';
 
 function RootLayout() {
     return (
-        <Fragment>
+        <>
             <Header>
                 <MainNavigation />
             </Header>
             <Outlet />
-        </Fragment>
+        </>
     )
 }
 
