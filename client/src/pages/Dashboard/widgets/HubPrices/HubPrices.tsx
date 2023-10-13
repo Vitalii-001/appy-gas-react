@@ -12,6 +12,8 @@ import { format } from 'date-fns';
 
 import { HeaderActions } from './styles';
 import { settlementPeriodEnum } from '../../../../shared/enums/settlementPeriod.enum';
+import { UseRequestProcessor } from '../../../../api/requestProcessor';
+import { fetchHubPrices } from '../../../../services/hubPrices';
 
 const layout = {
     responsive: true,
@@ -33,17 +35,40 @@ const layout = {
 }
 
 export default function HubPrices(props: any) { // TODO: fix any type;
-    console.log(props, 'props here')
     const settlementPeriodList = settlementPeriodEnum;
 
     const [settlementPeriod, setSettlementPeriod] = useState(settlementPeriodList.DA);
 
-    const handleChange = (event: SelectChangeEvent) => {
-        props.onChangeSettlementPeriod(event.target.value);
-        setSettlementPeriod(event.target.value as settlementPeriodEnum);
-    };
+    const { Query, Mutate } = UseRequestProcessor();
+    
+    // const [hubPriceWidgetData, setHubPriceWidgetData] = useState();
+
+    const { status, error, data: hubPrices, refetch } = Query(
+        ['hubPrices', settlementPeriod],
+        (params: any) => {
+            return fetchHubPrices(settlementPeriod)
+        }
+    );
+
+    const handleChange = Mutate(
+        ['hubPrices'],
+        (params: any) => {
+            setSettlementPeriod(params.target.value as settlementPeriodEnum);
+            
+            return fetchHubPrices(params.target.value)
+        }
+        // use lazy query;
+        // refetch;
+        // infinitive query;
+        // mutate/mutate async;
+
+        // refetch({ }) pass query
+
+        // fetchHubPrices(value)
+    );
+
     const dateFormat = settlementPeriod === settlementPeriodList.DA ? 'p' : 'PP'
-    const data = Object.entries(props.data || {}).map((data: any, i) => ( // remove any and use desctructured properties [key, value]
+    const data = Object.entries(hubPrices || {}).map((data: any, i) => ( // remove any and use desctructured properties [key, value]
        {
         name: data[0],
         x: data[1].map((prodData: any) => format(prodData.date, dateFormat)),
@@ -51,37 +76,50 @@ export default function HubPrices(props: any) { // TODO: fix any type;
         mode: 'line',
         connectgaps: true
        }
-    ))
+    ));
 
-    console.log(data, 'res')
+    console.log(status, 'RESULT status');
+    console.log(handleChange, 'RESULT handleChange');
+    let content;
+
+    if (status === 'loading') {
+        content = ( <h2>Loading...</h2> )
+    } else if (status === 'error') {
+        content = (<div>{JSON.stringify((error as Error).message)}</div>)
+    } else {
+        content = (
+            <>
+                    <HeaderActions>
+                        <Box sx={{ minWidth: 230 }}>
+                            <FormControl fullWidth>
+                                <InputLabel id="demo-simple-select-label">settlement periond</InputLabel>
+                                <Select
+                                    labelId="demo-simple-select-label"
+                                    id="demo-simple-select"
+                                    value={settlementPeriod}
+                                    label="Settlement periond"
+                                    onChange={(value: any) => handleChange.mutate(value)}
+                                >
+                                    <MenuItem value={settlementPeriodList.DA}>DA</MenuItem>
+                                    <MenuItem value={settlementPeriodList.MA}>MA</MenuItem>
+                                </Select>
+                            </FormControl>
+                            </Box>
+                    </HeaderActions>
+                    <Plot
+                        useResizeHandler={true}
+                        style={{ width: '100%', height: '100%', maxHeight: '300px' }}
+                        data={data}
+                        layout={layout} />
+                </> 
+        )    
+    }
 
     return (
         <Card>
             <CardContent>
                 <h1>Hub Prices</h1>
-                <HeaderActions>
-                    <Box sx={{ minWidth: 230 }}>
-                        <FormControl fullWidth>
-                            <InputLabel id="demo-simple-select-label">settlement periond</InputLabel>
-                            <Select
-                                labelId="demo-simple-select-label"
-                                id="demo-simple-select"
-                                value={settlementPeriod}
-                                label="Settlement periond"
-                                onChange={handleChange}
-                                >
-                                <MenuItem value={settlementPeriodList.DA}>DA</MenuItem>
-                                <MenuItem value={settlementPeriodList.MA}>MA</MenuItem>
-                            </Select>
-                        </FormControl>
-                    </Box>
-                </HeaderActions>
-                <Plot
-                    useResizeHandler={true}
-                    style={{width: '100%', height: '100%', maxHeight: '300px'}}
-                    data={ data }
-                    layout={ layout }
-      />
+                {content}
             </CardContent>
         </Card>
     );

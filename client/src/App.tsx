@@ -1,4 +1,3 @@
-import React from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import './App.scss';
 
@@ -10,7 +9,6 @@ import RouteCalculator from './pages/Route-calculator';
 import Availability from './pages/Availability';
 import RootLayout from './pages/Root';
 import Download from './pages/Download';
-import SignIn from './components/Auth/SignInForm';
 
 const router = createBrowserRouter([
   {
@@ -20,10 +18,6 @@ const router = createBrowserRouter([
       {
         path: "/",
         element: <Dashboard />,
-      },
-      {
-        path: "sign-in",
-        element: <SignIn />,
       },
       {
         path: "flows-map",
