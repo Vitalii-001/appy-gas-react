@@ -4,14 +4,19 @@
     "description": "A full-stack web application with NestJS and React.js",
     "main": "index.js",
     "scripts": {
-      "start": "cd client && npm install && npm run build && cd ../server && npm install && npm start",
-      "start:client": "cd client && npm install && npm start",
-      "start:server": "cd server && npm install && npm start",
-      "test": "echo \"Error: no test specified\" && exit 1"
+        "dev": "turbo run dev",
+        "build": "turbo run build",
+        "start": "node apps/server/dist/src/main"
     },
     "author": "Vitalii Polulikh",
     "license": "MIT",
     "dependencies": {
-      "express": "^4.17.1"
-    }
-  }
+        "express": "^4.17.1"
+    },
+    "devDependencies": {
+        "turbo": "^1.10.16"
+    },
+    "workspaces": [
+        "apps/*"
+    ]
+}
